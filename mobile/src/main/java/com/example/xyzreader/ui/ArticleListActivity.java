@@ -1,5 +1,9 @@
 package com.example.xyzreader.ui;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,14 +12,18 @@ import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.xyzreader.R;
@@ -29,24 +37,29 @@ import com.example.xyzreader.data.UpdaterService;
  * touched, lead to a {@link ArticleDetailActivity} representing item details. On tablets, the
  * activity presents a grid of items as cards.
  */
-public class ArticleListActivity extends ActionBarActivity implements
+public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
+    private Context mActivityContext;
+    FloatingActionButton mFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
+        mActivityContext = this;
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
+        mFab = (FloatingActionButton) findViewById(R.id.fave_fab);
 
-        final View toolbarContainerView = findViewById(R.id.toolbar_container);
+        final View toolbarContainerView = findViewById(R.id.appbar);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
@@ -130,8 +143,44 @@ public class ArticleListActivity extends ActionBarActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                    boolean fabIsTriggered = Utils.getFabTriggered(getApplicationContext());
+
+                    if (fabIsTriggered) {
+                        Utils.switchItemHighlightedState(getApplicationContext(),
+                              getItemId(vh.getAdapterPosition()));
+
+                        boolean isHighlighted = Utils.getItemHighlightedState(getApplicationContext(),
+                              getItemId(vh.getAdapterPosition()));
+
+                        if (isHighlighted) {
+                            view.setBackgroundColor(ContextCompat.getColor(
+                                  getApplicationContext(), R.color.highlight));
+                        } else {
+                            view.setBackgroundColor(ContextCompat.getColor(
+                                  getApplicationContext(), R.color.ltgray));
+                        }
+                    } else {
+
+                        //Start Detail Activity with Share Element Transition
+                        ImageView sharedTransitionImage =
+                              (ImageView) view.findViewById(R.id.thumbnail);
+
+                        String transitionName = getResources()
+                              .getString(R.string.transition_photo_list_detail) +
+                              String.valueOf(getItemId(vh.getAdapterPosition()));
+
+                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                              ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
+
+                        Bundle sharedElementTransitionBundle = ActivityOptions
+                              .makeSceneTransitionAnimation(
+                                    (Activity) mActivityContext,
+                                    sharedTransitionImage,
+                                    transitionName)
+                              .toBundle();
+
+                        startActivity(intent, sharedElementTransitionBundle);
+                    }
                 }
             });
             return vh;
@@ -141,6 +190,12 @@ public class ArticleListActivity extends ActionBarActivity implements
         public void onBindViewHolder(ViewHolder holder, int position) {
             mCursor.moveToPosition(position);
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+
+            //Set all transition names here
+            String transitionName = getResources().getString(R.string.transition_photo_list_detail)
+                  + String.valueOf(getItemId(position));
+            holder.thumbnailView.setTransitionName(transitionName);
+
             holder.subtitleView.setText(
                     DateUtils.getRelativeTimeSpanString(
                             mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
@@ -152,6 +207,15 @@ public class ArticleListActivity extends ActionBarActivity implements
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+
+            boolean isHighlighted =
+                  Utils.getItemHighlightedState(getApplicationContext(), getItemId(position));
+            if (isHighlighted) {
+                holder.itemView.setBackgroundColor(
+                      ContextCompat.getColor(getApplicationContext(), R.color.highlight)
+                );
+            }
+
         }
 
         @Override
@@ -171,5 +235,30 @@ public class ArticleListActivity extends ActionBarActivity implements
             titleView = (TextView) view.findViewById(R.id.article_title);
             subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
         }
+    }
+
+    public void onFabClick(View fab) {
+        Utils.setFabTriggered(getApplicationContext(), true);
+        Animator animator = ObjectAnimator.ofFloat(mRecyclerView, "elevation", 75f).setDuration(200);
+        animator.start();
+
+        final Snackbar snackbar = Snackbar
+              .make(findViewById(R.id.article_list_activity_coord_layout),
+                    getString(R.string.snackbar_message),
+                    Snackbar.LENGTH_INDEFINITE
+              );
+
+        snackbar.setAction(getString(R.string.snackbar_button), new View.OnClickListener() {
+                  @Override
+                  public void onClick(View view) {
+                      Utils.setFabTriggered(getApplicationContext(), false);
+                      snackbar.dismiss();
+                      Animator animator = ObjectAnimator.ofFloat(mRecyclerView, "elevation", 0f)
+                            .setDuration(150);
+                      animator.start();
+                      mFab.setTranslationY(0);
+                  }
+              });
+        snackbar.show();
     }
 }

@@ -9,4 +9,10 @@
 
     <string name="up">Up</string>
 
+    <!--Transition Animation Strings-->
+    <string name="transition_photo_list_detail">articlePhoto</string>
+
+    <string name="snackbar_message">Highlight Some Articles</string>
+    <string name="snackbar_button">BACK</string>
+
 </resources>

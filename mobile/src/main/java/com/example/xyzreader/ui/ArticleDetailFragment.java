@@ -11,15 +11,18 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,6 +42,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final float PARALLAX_FACTOR = 1.25f;
+    private static final long BACKGROUND_IMAGE_FADE_MILLIS = 1000;
 
     private Cursor mCursor;
     private long mItemId;
@@ -123,8 +127,39 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
+        // Set detail view image transition name shared
+        // with matching RecyclerView item in MainActivity
+        String transitionName = getResources().getString(R.string.transition_photo_list_detail)
+              + String.valueOf(mItemId);
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
+        mPhotoView.setTransitionName(transitionName);
         mPhotoContainerView = mRootView.findViewById(R.id.photo_container);
+
+        getActivity().getWindow().getSharedElementEnterTransition().addListener(new Transition.TransitionListener() {
+            public void onTransitionEnd(Transition transition) {
+                mPhotoView.animate().setDuration(BACKGROUND_IMAGE_FADE_MILLIS).alpha(1f);
+            }
+
+            @Override
+            public void onTransitionStart(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+
+            }
+        });
 
         mStatusBarColorDrawable = new ColorDrawable(0);
 
@@ -232,6 +267,17 @@ public class ArticleDetailFragment extends Fragment implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        mRootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
+                // Start the postponed transition
+                ActivityCompat.startPostponedEnterTransition(getActivity());
+                Log.d("TRANS_DETAIL_ACTIVITY", "Resuming transition");
+                return true;
+            }
+        });
+
         if (!isAdded()) {
             if (cursor != null) {
                 cursor.close();
