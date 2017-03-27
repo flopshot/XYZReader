@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="article_list_appbar_height">53dp</dimen>
+    <item name="article_list_match_parent" format="integer" type="dimen">-1</item>
+    <dimen name="recyclerview_top_padding">64dp</dimen>
+</resources>

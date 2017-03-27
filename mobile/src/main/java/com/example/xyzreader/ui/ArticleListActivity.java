@@ -44,7 +44,8 @@ public class ArticleListActivity extends AppCompatActivity implements
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private Context mActivityContext;
-    FloatingActionButton mFab;
+    private FloatingActionButton mFab;
+    int mAccentColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,8 @@ public class ArticleListActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             refresh();
         }
+
+        mAccentColor = Utils.getAccentColor(ArticleListActivity.this);
     }
 
     private void refresh() {
@@ -146,6 +149,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                     boolean fabIsTriggered = Utils.getFabTriggered(getApplicationContext());
 
                     if (fabIsTriggered) {
+
                         Utils.switchItemHighlightedState(getApplicationContext(),
                               getItemId(vh.getAdapterPosition()));
 
@@ -153,17 +157,18 @@ public class ArticleListActivity extends AppCompatActivity implements
                               getItemId(vh.getAdapterPosition()));
 
                         if (isHighlighted) {
-                            view.setBackgroundColor(ContextCompat.getColor(
-                                  getApplicationContext(), R.color.highlight));
+                            view.setBackgroundColor(mAccentColor);
                         } else {
                             view.setBackgroundColor(ContextCompat.getColor(
-                                  getApplicationContext(), R.color.ltgray));
+                                  getApplicationContext(), android.R.color.white));
                         }
                     } else {
 
                         //Start Detail Activity with Share Element Transition
                         ImageView sharedTransitionImage =
                               (ImageView) view.findViewById(R.id.thumbnail);
+
+
 
                         String transitionName = getResources()
                               .getString(R.string.transition_photo_list_detail) +
@@ -211,9 +216,7 @@ public class ArticleListActivity extends AppCompatActivity implements
             boolean isHighlighted =
                   Utils.getItemHighlightedState(getApplicationContext(), getItemId(position));
             if (isHighlighted) {
-                holder.itemView.setBackgroundColor(
-                      ContextCompat.getColor(getApplicationContext(), R.color.highlight)
-                );
+                holder.itemView.setBackgroundColor(mAccentColor);
             }
 
         }

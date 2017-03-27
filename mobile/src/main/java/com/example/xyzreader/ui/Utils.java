@@ -2,7 +2,12 @@ package com.example.xyzreader.ui;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.preference.PreferenceManager;
+import android.support.annotation.ColorInt;
+import android.util.TypedValue;
+
+import com.example.xyzreader.R;
 
 /**
  * Utility for shared prefs
@@ -43,5 +48,17 @@ public class Utils {
         String key = KEY_ARTICLE_HIGHLIGHTED_STATE_PREFIX + itemStringId;
         editor.putBoolean(key, switchedStated);
         editor.apply();
+    }
+
+    /**
+     * Method Parameter activityContext must be the ACtivity's context and not the application context
+     * or any other context outside the calling class
+     */
+    public static int getAccentColor(Context activityContext) {
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = activityContext.getTheme();
+        theme.resolveAttribute(R.attr.colorAccent, typedValue, true);
+        @ColorInt int color = typedValue.data;
+        return color;
     }
 }

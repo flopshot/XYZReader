@@ -17,12 +17,53 @@
 
 <resources>
 
-    <style name="Theme.Bacon" parent="@style/Theme.AppCompat.Light.NoActionBar">
-
+    <style name="Theme.Bacon" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/gray_900</item>
+        <item name="colorPrimaryDark">@color/gray_700</item>
+        <item name="colorAccent">@color/deep_orange_500</item>
     </style>
 
     <style name="Theme.Bacon.Detail">
         <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="ArticleListTitle" parent="@style/TextAppearance.AppCompat.Subhead">
+        <item name="android:fontFamily">times new roman</item>
+        <item name="android:textColor">@color/gray_900</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/list_title_text_size</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">4</item>
+    </style>
+
+    <style name="ArticleListSubtitle" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/gray_900</item>
+        <item name="android:fontFamily">times new roman</item>
+        <item name="android:textSize">@dimen/list_subtitle_text_size</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="ArticleListTitle.DetailTitle">
+        <item name="android:textColor">@color/lt_gray</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/detail_title_text_size</item>
+        <item name="android:maxLines">7</item>
+    </style>
+
+    <style name="ArticleListSubtitle.DetailByLine">
+        <item name="android:textColor">@color/lt_gray</item>
+        <item name="android:maxLines">7</item>
+    </style>
+
+    <style name="ArticleListSubtitle.DetailBody">
+        <item name="android:textSize">@dimen/detail_body_text_size</item>
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="android:textColorLink">@color/deep_orange_500</item>
+        <item
+            name="android:lineSpacingMultiplier">@fraction/detail_body_line_spacing_multiplier
+        </item>
+        <item name="android:maxLines">999</item>
     </style>
 
 </resources>

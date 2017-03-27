@@ -10,12 +10,13 @@
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="116dp"
+            android:paddingTop="@dimen/recyclerview_top_padding"
             android:clipToPadding="false"
             android:scrollbarStyle="outsideOverlay"
             android:paddingLeft="@dimen/list_side_margin"
@@ -29,7 +30,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="@dimen/article_list_appbar_height"
         android:background="?colorPrimary"
         android:gravity="bottom"
         android:elevation="8dp">
@@ -61,9 +62,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/fab_margin"
         android:onClick="onFabClick"
         android:src="@drawable/vector_star"
+        android:elevation="16dp"
         app:layout_anchor="@+id/recycler_view"
         app:layout_anchorGravity="bottom|right|end"/>
 
