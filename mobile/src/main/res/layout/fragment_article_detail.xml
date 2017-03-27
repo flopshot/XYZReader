@@ -27,8 +27,9 @@
                     android:background="@drawable/photo_background_protection"/>
                 <ImageView
                     android:id="@+id/photo"
+                    android:scaleType="centerCrop"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="@dimen/detail_card_top_margin"/>
 
 
             </FrameLayout>
