@@ -48,14 +48,14 @@ public class ArticleDetailFragment extends Fragment implements
     private int mMutedColor = 0xFF333333;
     private ObservableScrollView mScrollView;
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
-    private ColorDrawable mStatusBarColorDrawable;
+    ColorDrawable mStatusBarColorDrawable;
 
-    private int mTopInset;
-    private View mPhotoContainerView;
+    int mTopInset;
+    private View mPhotoContainerView, mFabShare;
     private ImageView mPhotoView;
     private int mScrollY;
     private boolean mIsCard = false;
-    private int mStatusBarFullOpacityBottom;
+    int mStatusBarFullOpacityBottom;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -114,6 +114,8 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
+        mFabShare = mRootView.findViewById(R.id.share_fab);
+
         mScrollView = (ObservableScrollView) mRootView.findViewById(R.id.scrollview);
         mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
             @Override
@@ -121,6 +123,13 @@ public class ArticleDetailFragment extends Fragment implements
                 mScrollY = mScrollView.getScrollY();
                 getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
                 mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
+
+                //Hide fab when not scrolled to top of master layout
+                if (mScrollY > 0) {
+                    mFabShare.setVisibility(View.GONE);
+                } else {
+                    mFabShare.setVisibility(View.VISIBLE);
+                }
                 //updateStatusBar();
             }
         });
@@ -270,7 +279,6 @@ public class ArticleDetailFragment extends Fragment implements
                 mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
                 // Start the postponed transition
                 ActivityCompat.startPostponedEnterTransition(getActivity());
-                Log.d("TRANS_DETAIL_ACTIVITY", "Resuming transition");
                 return true;
             }
         });
