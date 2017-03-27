@@ -33,7 +33,7 @@
         android:layout_height="@dimen/article_list_appbar_height"
         android:background="?colorPrimary"
         android:gravity="bottom"
-        android:elevation="6dp">
+        android:elevation="@dimen/appbar_elevation">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -64,7 +64,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:onClick="onFabClick"
         android:src="@drawable/vector_star"
-        android:elevation="16dp"
+        android:elevation="@dimen/fab_elevation"
         app:layout_anchor="@+id/recycler_view"
         app:layout_anchorGravity="bottom|right|end"/>
 
